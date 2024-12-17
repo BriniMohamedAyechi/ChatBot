@@ -7,7 +7,7 @@
     border: none;
     height: 2px;
     background-color:  #1E2A3A;
-    opacity: 0.1;
+    opacity: 0.5;
     border-radius: 5px;
     margin: 20px 0px;
  }
@@ -36,4 +36,34 @@
       color: #FFFFFF; /* White text on hover */
    }
  }
+
+ .logo {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  
+
+  img {
+    width: 80px;
+    height: 80px;
+  }
+  span{
+    font-size: 20px;
+}
+}
+.user{
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  margin-top: 30px;
+  font-size: 20px;
+  padding: 10px;
+  border-radius: 10px;
+
+  &:hover{
+    background-color: #12203A; /* Dark blue hover background */
+    color: #FFFFFF; /* White text on hover */
+ }
+
+}
 }

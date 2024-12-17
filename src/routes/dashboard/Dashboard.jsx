@@ -5,8 +5,8 @@ const Dashboard = () => {
     <div className="dashboard">
       <div className="texts">
         <div className="logo">
-          <img src="/logo.png" alt="" />
-          <h1>SAPHERA CHATBOT</h1>
+          <img src="/logo.svg" alt="" />
+          <h1>SAPHERA AI</h1>
         </div>
         <div className="options">
           <div className="option">

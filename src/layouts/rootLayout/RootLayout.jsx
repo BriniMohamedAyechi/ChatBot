@@ -17,18 +17,6 @@ const RootLayout = () => {
     <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
 
     <div className='rootLayout'>
-      <header>
-      <Link to="/" className="logo">
-              <img src="/logo.png" alt="" />
-              <span style={{fontSize:25}}>Saphera</span>
-      </Link>
-        <div className="user">
-      <SignedIn>
-        <UserButton />
-      </SignedIn>
-
-        </div>
-      </header>
       <main>
         <Outlet/>
       </main>
