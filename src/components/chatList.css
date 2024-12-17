@@ -1,0 +1,39 @@
+.chatList{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+ hr{
+    border: none;
+    height: 2px;
+    background-color:  #1E2A3A;
+    opacity: 0.1;
+    border-radius: 5px;
+    margin: 20px 0px;
+ }
+ .title{
+   font-weight: 600;
+   font-size: 20px;
+   color: #ffffff;
+   margin-bottom: 10px;
+
+ }   
+ .list{
+   display: flex;
+   flex-direction: column;
+   overflow: scroll;
+   
+ }
+ a{
+   padding: 10px;
+   border-radius: 10px;
+   color: #C9D6E0; /* Light greyish-blue text */
+   text-decoration: none;
+   transition: background-color 0.3s, color 0.3s;
+
+   &:hover{
+      background-color: #12203A; /* Dark blue hover background */
+      color: #FFFFFF; /* White text on hover */
+   }
+ }
+}
