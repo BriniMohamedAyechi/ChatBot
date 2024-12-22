@@ -1,80 +1,88 @@
-import { useState,useRef,useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import Upload from "../upload/Upload";
 import "./newPrompt.css";
 import { IKImage } from "imagekitio-react";
-import model from "../../api/gemini";
-import Markdown from "react-markdown"
+import Markdown from "react-markdown";
 
 const NewPrompt = () => {
-  const [question,setQuestion]= useState("")
-  const [answer,setAnswer]= useState("")
-
-
-  const [img,setImg] = useState({
-    isLoading:false,
-    error:"",
-    dbData:{},
-    aiData:{},
-  })
-  const endRef = useRef(null);  
-
-
-  const chat = model.startChat({
-    history: [
-      {
-        role: "user",
-        parts: [{ text: "Hello" }],
-      },
-      {
-        role: "model",
-        parts: [{ text: "Great to meet you. What would you like to know?" }],
-      },
-    ],
+  const [question, setQuestion] = useState("");
+  const [answer, setAnswer] = useState("");
+  const [img, setImg] = useState({
+    isLoading: false,
+    error: "",
+    dbData: {},
+    aiData: {},
   });
+  const endRef = useRef(null);
 
   useEffect(() => {
-    endRef.current.scrollIntoView({ behavior: "smooth" }); 
-  }, [answer,question,img.dbData]); 
+    endRef.current.scrollIntoView({ behavior: "smooth" });
+  }, [answer, question, img.dbData]);
 
-  const add = async(text)=>{
-    setQuestion(text)
-    const result = await chat.sendMessageStream(Object.entries(img.aiData).length ? [img.aiData,text]:[text]);
-    let accumlatedText="";
-    for await (const chunk of result.stream) {
-      const chunkText = chunk.text();
-      console.log(chunkText);
-      accumlatedText+=chunkText;
-    setAnswer(accumlatedText);
-
+  const add = async (text) => {
+    setQuestion(text);
+    const formData = new FormData();
+    formData.append("message", text);
+  
+    // Check if the image exists and append it to the form data
+    if (img.aiData?.file) {
+      formData.append("image", img.aiData.file);
+  
     }
 
-    setImg({isLoading:false,
-    error:"",
-    dbData:{},
-    aiData:{},})
+    setImg({ ...img, isLoading: true });
+  
+    try {
+      // Sending a POST request with both message and image in form data
+      const response = await fetch("https://llama-api-qbs3.onrender.com/send_message/", {
+        method: "POST",
+        body: formData,
+      });
+  
+      const result = await response.json();
+      if (response.ok) {
+        setAnswer(result.response);
+    
+      } else {
+        setAnswer(`Error: ${result.detail}`);
+      }
+    } catch (error) {
+      setAnswer("Error sending the message.");
+    }
+  
+    /*setImg({
+      isLoading: false,
+      error: "",
+      dbData: {},
+      aiData: {},
+    }); */
+  };
+  
 
-  }
-  const handlleSubmit = async(e)=>{
-    e.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     const text = e.target.text.value;
-    if(!text) return;
+    if (!text) return;
 
-    add(text)
-  }
+    add(text);
+
+  };
+
   return (
     <>
-    {/* ADD NEW CHAT */}
-    {img.isLoading && <div className="">Loading...</div>}
-    {img.dbData?.filePath && (
-      <IKImage urlEndpoint={import.meta.env.VITE_IMAGE_KIT_ENDPOINT}
-      path={img.dbData?.filePath}
-      width="380"/>
-    )}
-    {question && <div className="message user">{question}</div>}
-    {answer && <div className="message">{<Markdown>{answer}</Markdown>}</div>}
-    <div className="endChat" ref={endRef}></div>
-      <form className="newForm" on onSubmit={handlleSubmit}>
-      <Upload setImg={setImg}/>
+      {/* ADD NEW CHAT */}
+      {img.dbData?.filePath && (
+        <IKImage
+          urlEndpoint={import.meta.env.VITE_IMAGE_KIT_ENDPOINT}
+          path={img.dbData?.filePath}
+          width="380"
+        />
+      )}
+      {question && <div className="message user">{question}</div>}
+      {answer && <div className="message">{<Markdown>{answer}</Markdown>}</div>}
+      <div className="endChat" ref={endRef}></div>
+      <form className="newForm" onSubmit={handleSubmit}>
+        <Upload setImg={setImg} />
         <input id="file" type="file" multiple={false} hidden />
         <input type="text" name="text" placeholder="Ask me anything..." />
         <button>
