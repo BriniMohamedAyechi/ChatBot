@@ -1,23 +1,34 @@
+import { useNavigate } from "react-router-dom";
 import "./dashboard.css";
-import {useAuth} from "@clerk/clerk-react"
-
-
-
+import { useMutation, QueryClient } from "@tanstack/react-query";
 
 const Dashboard = () => {
-  const {userId} = useAuth();
-  const handleSubmit= async(e)=>{
+  const queryClient = new QueryClient();
+  const navigate = useNavigate();
+
+  const mutation = useMutation({
+    mutationFn: (text) => {
+      return fetch(`${import.meta.env.VITE_API_URL}/api/chats`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text }),
+      }).then((res) => res.json());
+    },
+    onSuccess: (id) => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ["userChats"] });
+      navigate(`/dashboard/chats/${id}`);
+    },
+  });
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const text = e.target.text.value
-    if(!text) return;
-    await fetch("http://localhost:8000/api/chats",{
-      method: "POST",
-      headers:{
-        "Content-Type":"application/json",
-      },
-      body: JSON.stringify({userId,text})
-    })
-  }
+    const text = e.target.text.value;
+    if (!text) return;
+    mutation.mutate(text);
+  };
   return (
     <div className="dashboard">
       <div className="texts">
@@ -27,24 +38,24 @@ const Dashboard = () => {
         </div>
         <div className="options">
           <div className="option">
-            <img src="/chat.png" alt=""  />
+            <img src="/chat.png" alt="" />
             <span>Create a New Chat</span>
           </div>
           <div className="option">
-            <img src="/image.png" alt=""  />
+            <img src="/image.png" alt="" />
             <span>Analyze Images</span>
           </div>
           <div className="option">
-            <img src="/code.png" alt=""  />
+            <img src="/code.png" alt="" />
             <span>Help me with my Code</span>
           </div>
         </div>
       </div>
       <div className="formContainer">
         <form on onSubmit={handleSubmit}>
-          <input type="text"name ="text"placeholder="Ask me Anything..."/>
-          <button >
-            <img src="arrow.png" alt=""/>
+          <input type="text" name="text" placeholder="Ask me Anything..." />
+          <button>
+            <img src="arrow.png" alt="" />
           </button>
         </form>
       </div>

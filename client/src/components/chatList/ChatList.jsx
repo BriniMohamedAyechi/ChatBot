@@ -3,6 +3,8 @@ import "./chatList.css";
 import { ClerkProvider } from "@clerk/clerk-react";
 import { useUser } from "@clerk/clerk-react";
 
+import {useQuery} from '@tanstack/react-query'
+
 import {
   SignedIn,
   SignedOut,
@@ -20,6 +22,14 @@ if (!PUBLISHABLE_KEY) {
 const ChatList = () => {
   const { user } = useUser();
 
+  const { isPending, error, data } = useQuery({
+    queryKey: ['userChats'],
+    queryFn: () =>
+      fetch(`${import.meta.env.VITE_API_URL}/api/userchats`,{credentials:"include"}).then((res) =>
+        res.json(),
+      ),
+  })
+
   return (
     <div className="chatList">
       <Link to="/" className="logo">
@@ -34,19 +44,11 @@ const ChatList = () => {
       <hr />
       <span className="title">Recent Chats</span>
       <div className="list">
-        <Link to="/">My Chat title</Link>
-        <Link to="/">My Chat title</Link>
-        <Link to="/">My Chat title</Link>
-        <Link to="/">My Chat title</Link>
-        <Link to="/">My Chat title</Link>
-        <Link to="/">My Chat title</Link>
-        <Link to="/">My Chat title</Link>
-        <Link to="/">My Chat title</Link>
-        <Link to="/">My Chat title</Link>
-        <Link to="/">My Chat title</Link>
+        {isPending? "Loading...":error? "Something went Wrong":data?.map(chat=>(
+          <Link to={`/dashboard/chats/${chat._id}`} key={chat._id}>{chat.title}</Link>
+        ))}
       </div>
       <hr />
-
       <div className="user">
         <SignedIn>
           <div

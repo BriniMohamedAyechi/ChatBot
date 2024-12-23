@@ -12,6 +12,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@clerk/clerk-sdk-node": "^5.1.4",
+    "@tanstack/react-query": "^5.62.8",
     "cors": "^2.8.5",
     "imagekit": "^6.0.0",
     "mongoose": "^8.9.2",
